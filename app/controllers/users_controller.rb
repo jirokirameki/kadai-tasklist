@@ -13,8 +13,11 @@ class UsersController < ApplicationController
     if @user.save
       flash[:success] = 'ユーザを登録しました。'
       # redirect_to @user
-      redirect_to tasks_path
       
+      # signup成功、即ログインとするために
+      session[:user_id] = @user.id
+      
+      redirect_to tasks_path
     else
       flash.now[:danger] = 'ユーザの登録に失敗しました。'
       render :new
