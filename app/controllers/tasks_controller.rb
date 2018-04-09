@@ -1,6 +1,7 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
   before_action :require_user_logged_in
+  before_action :comfirm_current_user, only: [:show, :edit, :update, :destroy]
   
   def index
     # @tasks = Task.all.page(params[:page]).per(10)
@@ -43,6 +44,13 @@ class TasksController < ApplicationController
   end
 
   def destroy
+    # if current_user == @task.user
+    #   @task.destroy
+    #   flash[:success] = 'Task は正常に削除されました'
+    # else
+    #   flash[:success] = 'Task は削除されませんでした'
+    # end
+
     @task.destroy
 
     flash[:success] = 'Task は正常に削除されました'
@@ -50,7 +58,16 @@ class TasksController < ApplicationController
   end
   
   private
-  
+
+  def comfirm_current_user
+    if current_user != @task.user
+      # 強制ログアウト
+      session[:user_id] = nil
+      # ログインページへ遷移
+      redirect_to login_url
+    end
+  end
+
   def set_task
     @task = Task.find(params[:id])
   end
